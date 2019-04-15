@@ -42,7 +42,7 @@ namespace dugout.WebApi
             }
 
             app.UseHttpsRedirection();
-            app.UseMvc();
+            app.UseMvcWithDefaultRoute();
         }
     }
 }
