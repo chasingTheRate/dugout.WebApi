@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using dugout.WebApi.Services;
+using dugout.WebApi.Models;
 
 namespace dugout.WebApi.Controllers
 {
@@ -10,11 +12,19 @@ namespace dugout.WebApi.Controllers
     [ApiController]
     public class MlbController : ControllerBase
     {
-
+        public IMlbService _mlbService;
+        public MlbContext _context; 
+        public MlbController(IMlbService mlbService, MlbContext context) {
+          _mlbService = mlbService;
+          _context = context;
+        }
         [HttpPost]
-        public ActionResult<IEnumerable<string>> UpdateTeams()
-        {
-            return new string[] { "update", "team" };
+        public async Task<IEnumerable<Team>> UpdateTeams()
+        { 
+            var teams = await _mlbService.GetTeams(SportIds.Mlb);
+            _context.Teams.AddRange(teams);
+            _context.SaveChanges();
+            return teams;
         }
 
         // GET api/values
