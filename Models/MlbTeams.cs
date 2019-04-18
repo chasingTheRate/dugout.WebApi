@@ -1,138 +1,146 @@
 
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace dugout.WebApi.Models {
      public class Venue
     {
 
-        [JsonProperty("id")]
+        [BsonId]
+        //[BsonRepresentation(BsonType.ObjectId)]
         public int id { get; set; }
 
-        [JsonProperty("name")]
+        [BsonElement("name")]
         public string name { get; set; }
 
-        [JsonProperty("link")]
+        [BsonElement("link")]
         public string link { get; set; }
     }
 
     public class League
     {
 
-        [JsonProperty("id")]
+        [BsonId]
+        //[BsonRepresentation(BsonType.ObjectId)]
         public int id { get; set; }
 
-        [JsonProperty("name")]
+        [BsonElement("name")]
         public string name { get; set; }
 
-        [JsonProperty("link")]
+        [BsonElement("link")]
         public string link { get; set; }
     }
 
     public class Division
     {
 
-        [JsonProperty("id")]
+        [BsonId]
+        //[BsonRepresentation(BsonType.ObjectId)]
         public int id { get; set; }
 
-        [JsonProperty("name")]
+        [BsonElement("name")]
         public string name { get; set; }
 
-        [JsonProperty("link")]
+        [BsonElement("link")]
         public string link { get; set; }
     }
 
     public class Sport
     {
 
-        [JsonProperty("id")]
+        [BsonId]
+        //[BsonRepresentation(BsonType.ObjectId)]
         public int id { get; set; }
 
-        [JsonProperty("link")]
+        [BsonElement("link")]
         public string link { get; set; }
 
-        [JsonProperty("name")]
+        [BsonElement("name")]
         public string name { get; set; }
     }
 
     public class SpringLeague
     {
 
-        [JsonProperty("id")]
+        [BsonId]
+        //[BsonRepresentation(BsonType.ObjectId)]
         public int id { get; set; }
 
-        [JsonProperty("name")]
+        [BsonElement("name")]
         public string name { get; set; }
 
-        [JsonProperty("link")]
+        [BsonElement("link")]
         public string link { get; set; }
 
-        [JsonProperty("abbreviation")]
+        [BsonElement("abbreviation")]
         public string abbreviation { get; set; }
     }
 
     public class Team
     {
 
-        [JsonProperty("id")]
+        [BsonId]
+        //[BsonRepresentation(BsonType.ObjectId)]
         public int id { get; set; }
 
-        [JsonProperty("name")]
+        [BsonElement("name")]
         public string name { get; set; }
 
-        [JsonProperty("link")]
+        [BsonElement("link")]
         public string link { get; set; }
 
-        [JsonProperty("venue")]
+        [BsonElement("venue")]
         public Venue venue { get; set; }
 
-        [JsonProperty("teamCode")]
+        [BsonElement("teamCode")]
         public string teamCode { get; set; }
 
-        [JsonProperty("fileCode")]
+        [BsonElement("fileCode")]
         public string fileCode { get; set; }
 
-        [JsonProperty("abbreviation")]
+        [BsonElement("abbreviation")]
         public string abbreviation { get; set; }
 
-        [JsonProperty("teamName")]
+        [BsonElement("teamName")]
         public string teamName { get; set; }
 
-        [JsonProperty("locationName")]
+        [BsonElement("locationName")]
         public string locationName { get; set; }
 
-        [JsonProperty("firstYearOfPlay")]
+        [BsonElement("firstYearOfPlay")]
         public string firstYearOfPlay { get; set; }
 
-        [JsonProperty("league")]
+        [BsonElement("league")]
         public League league { get; set; }
 
-        [JsonProperty("division")]
+        [BsonElement("division")]
         public Division division { get; set; }
 
-        [JsonProperty("sport")]
+        [BsonElement("sport")]
         public Sport sport { get; set; }
 
-        [JsonProperty("shortName")]
+        [BsonElement("shortName")]
         public string shortName { get; set; }
 
-        [JsonProperty("springLeague")]
+        [BsonElement("springLeague")]
         public SpringLeague springLeague { get; set; }
 
-        [JsonProperty("allStarStatus")]
+        [BsonElement("allStarStatus")]
         public string allStarStatus { get; set; }
 
-        [JsonProperty("active")]
+        [BsonElement("active")]
         public bool active { get; set; }
     }
 
     public class MlbTeams
     {
 
-        [JsonProperty("copyright")]
+        [BsonElement("copyright")]
         public string copyright { get; set; }
 
-        [JsonProperty("teams")]
+        [BsonElement("teams")]
         public IList<Team> teams { get; set; }
     }
 }

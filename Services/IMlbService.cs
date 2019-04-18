@@ -4,8 +4,12 @@ using dugout.WebApi.Models;
 
 namespace dugout.WebApi.Services {
   public interface IMlbService
-{
-    Task<IList<Team>> GetTeams(int id);
-};
+  {
+    void CreateOrUpdateTeams(IList<Team> teams);
+    void CreateOrUpdateRosters(IList<MlbRosters> rosters);
+    Task<IList<Team>> GetTeams();
+    Task<IList<MlbRosters>> GetRosters();
+
+  };
 }
 

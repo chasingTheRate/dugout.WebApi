@@ -10,7 +10,7 @@ using dugout.WebApi.Models;
 namespace dugout.WebApi.Migrations
 {
     [DbContext(typeof(MlbContext))]
-    [Migration("20190416130437_initial")]
+    [Migration("20190417035440_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -49,6 +49,84 @@ namespace dugout.WebApi.Migrations
                     b.ToTable("League");
                 });
 
+            modelBuilder.Entity("dugout.WebApi.Models.MlbRosters", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("copyright");
+
+                    b.Property<string>("link");
+
+                    b.Property<string>("rosterType");
+
+                    b.Property<int>("teamId");
+
+                    b.HasKey("id");
+
+                    b.ToTable("MlbRosters");
+                });
+
+            modelBuilder.Entity("dugout.WebApi.Models.Person", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("fullName");
+
+                    b.Property<string>("link");
+
+                    b.HasKey("id");
+
+                    b.ToTable("Person");
+                });
+
+            modelBuilder.Entity("dugout.WebApi.Models.Position", b =>
+                {
+                    b.Property<string>("code")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("abbreviation");
+
+                    b.Property<string>("name");
+
+                    b.Property<string>("type");
+
+                    b.HasKey("code");
+
+                    b.ToTable("Position");
+                });
+
+            modelBuilder.Entity("dugout.WebApi.Models.Roster", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int?>("MlbRostersid");
+
+                    b.Property<string>("jerseyNumber");
+
+                    b.Property<int>("parentTeamId");
+
+                    b.Property<int?>("personid");
+
+                    b.Property<string>("positioncode");
+
+                    b.Property<string>("statuscode");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("MlbRostersid");
+
+                    b.HasIndex("personid");
+
+                    b.HasIndex("positioncode");
+
+                    b.HasIndex("statuscode");
+
+                    b.ToTable("Roster");
+                });
+
             modelBuilder.Entity("dugout.WebApi.Models.Sport", b =>
                 {
                     b.Property<int>("id")
@@ -77,6 +155,18 @@ namespace dugout.WebApi.Migrations
                     b.HasKey("id");
 
                     b.ToTable("SpringLeague");
+                });
+
+            modelBuilder.Entity("dugout.WebApi.Models.Status", b =>
+                {
+                    b.Property<string>("code")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("description");
+
+                    b.HasKey("code");
+
+                    b.ToTable("Status");
                 });
 
             modelBuilder.Entity("dugout.WebApi.Models.Team", b =>
@@ -143,6 +233,25 @@ namespace dugout.WebApi.Migrations
                     b.HasKey("id");
 
                     b.ToTable("Venue");
+                });
+
+            modelBuilder.Entity("dugout.WebApi.Models.Roster", b =>
+                {
+                    b.HasOne("dugout.WebApi.Models.MlbRosters")
+                        .WithMany("roster")
+                        .HasForeignKey("MlbRostersid");
+
+                    b.HasOne("dugout.WebApi.Models.Person", "person")
+                        .WithMany()
+                        .HasForeignKey("personid");
+
+                    b.HasOne("dugout.WebApi.Models.Position", "position")
+                        .WithMany()
+                        .HasForeignKey("positioncode");
+
+                    b.HasOne("dugout.WebApi.Models.Status", "status")
+                        .WithMany()
+                        .HasForeignKey("statuscode");
                 });
 
             modelBuilder.Entity("dugout.WebApi.Models.Team", b =>
