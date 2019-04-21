@@ -29,5 +29,41 @@ namespace dugout.WebApi.Services {
         var response = await _httpClient.GetStringAsync(uri);
         return JsonConvert.DeserializeObject<MlbRosters>(response);
     }
-}
+
+    public async Task<IList<Person>> GetPlayers(string personIds)
+    {
+        var uri = $"http://statsapi.mlb.com:80/api/v1/people?personIds={personIds}";
+        var response = await _httpClient.GetStringAsync(uri);
+        return JsonConvert.DeserializeObject<MlbPlayer>(response).people;
+    }
+
+    public async Task<MlbSchedule> GetSchedule(string date)
+    {
+        var uri = $"http://statsapi.mlb.com:80/api/v1/schedule?sportId=1&date={date}";
+        var response = await _httpClient.GetStringAsync(uri);
+        return JsonConvert.DeserializeObject<MlbSchedule>(response);
+    }
+
+    public async Task<MlbBoxscore> GetBoxscore(string gameId)
+    {
+        var uri = $"http://statsapi.mlb.com:80/api/v1/game/{gameId}/boxscore";
+        var response = await _httpClient.GetStringAsync(uri);
+        return JsonConvert.DeserializeObject<MlbBoxscore>(response);
+    }
+
+    public async Task<MlbGameFeedLive> GetGameFeedLive(string gameId)
+    {
+        var uri = $"http://statsapi.mlb.com:80/api/v1/game/{gameId}/feed/live";
+        var response = await _httpClient.GetStringAsync(uri);
+        return JsonConvert.DeserializeObject<MlbGameFeedLive>(response);
+    }
+
+    public async Task<MlbGameLinescore> GetGameLinescore(string gameId)
+    {
+        var uri = $"http://statsapi.mlb.com:80/api/v1/game/{gameId}/linescore";
+        var response = await _httpClient.GetStringAsync(uri);
+        return JsonConvert.DeserializeObject<MlbGameLinescore>(response);
+    }
+
+  }
 }

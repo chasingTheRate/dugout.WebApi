@@ -9,7 +9,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace dugout.WebApi.Models{
 
- public class Person
+ public class RosterPerson
   {
     [BsonId]
     public int id { get; set; }
@@ -56,7 +56,7 @@ namespace dugout.WebApi.Models{
     public ObjectId Id { get; set; }
 
     [BsonElement("person")]
-    public Person person { get; set; }
+    public RosterPerson person { get; set; }
 
     [BsonElement("jerseyNumber")]
     public string jerseyNumber { get; set; }
