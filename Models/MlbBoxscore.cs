@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Converters;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.ComponentModel.DataAnnotations;
@@ -639,16 +640,6 @@ namespace dugout.WebApi.Models {
         public string value { get; set; }
     }
 
-    public class BoxscoreInfo
-    {
-
-        [JsonProperty("title")]
-        public string title { get; set; }
-
-        [JsonProperty("fieldList")]
-        public IList<FieldList> fieldList { get; set; }
-    }
-
     public class BoxscoreHome
     {
 
@@ -677,7 +668,7 @@ namespace dugout.WebApi.Models {
         public IList<int> battingOrder { get; set; }
 
         [JsonProperty("info")]
-        public IList<BoxscoreInfo> info { get; set; }
+        public IList<Info> info { get; set; }
 
         [JsonProperty("note")]
         public IList<object> note { get; set; }

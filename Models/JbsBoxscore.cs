@@ -21,8 +21,8 @@ namespace dugout.WebApi.Models {
     public string awayShortName { get; set; }
     public List<JbsBoxscoreBatter> homeBatters { get; set;}
     public List<JbsBoxscoreBatter> awayBatters { get; set;}
-
-
+    public IList<Info> fieldingAndBattingInfo { get; set; }
+    
     //  linescore
     //  batters
     //  gameInfo

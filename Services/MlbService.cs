@@ -5,6 +5,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using dugout.WebApi.Models;
+using dugout.WebApi.Extentions;
 using MongoDB.Driver;
 
 namespace dugout.WebApi.Services {
@@ -73,16 +74,50 @@ namespace dugout.WebApi.Services {
 			}
 			return batterList;
 		}
+
+		private List<FieldList> MergeFieldLists(IList<FieldList> awayFieldList, IList<FieldList> homeFieldList) {
+			var fieldLists = new List<FieldList>();
+			fieldLists.AddRange(awayFieldList);
+			foreach(var field in homeFieldList) {
+				try {
+					fieldLists.Where(i => i.label == field.label).First().value.ToList().AddRange(field.value);
+				}
+				catch {
+					fieldLists.Add(field);
+				}
+			}
+
+			return fieldLists;
+		}
+
+		private List<Info> BuildFieldingAndBattingInfo(IList<Info> awayInfo, IList<Info> homeInfo){
+			var fieldingAndBattingInfo = new List<Info>();
+			fieldingAndBattingInfo.AddRange(awayInfo);
+			foreach(var info in homeInfo){
+				try {
+					var tempInfo = fieldingAndBattingInfo.Where(i => i.title == info.title).ToList().First();
+					tempInfo.fieldList.ToList().MergeFieldLists(info.fieldList.ToList());
+				}
+				catch {
+					fieldingAndBattingInfo.Add(info);
+				}
+			}
+			return fieldingAndBattingInfo;
+		}
+
 		public JbsBoxscore BuildBoxscore(MlbGameData gameData) {
 			var boxscore = new JbsBoxscore();
-			boxscore.awayLocationName = gameData.boxscore.teams.away.team.locationName;
-			boxscore.homeLocationName = gameData.boxscore.teams.away.team.locationName;
-			boxscore.awayTeamName = gameData.boxscore.teams.away.team.teamName;
-			boxscore.homeTeamName = gameData.boxscore.teams.away.team.teamName;
-			boxscore.homeShortName = gameData.boxscore.teams.away.team.shortName;
-			boxscore.awayShortName = gameData.boxscore.teams.away.team.shortName;
-			boxscore.homeBatters = BuildBatterList(gameData.boxscore.teams.home.batters, gameData.boxscore.teams.home.players.players, gameData.feedLive.gameData.players.players);
-			boxscore.awayBatters = BuildBatterList(gameData.boxscore.teams.away.batters, gameData.boxscore.teams.away.players.players, gameData.feedLive.gameData.players.players);
+			var awayTeamBox = gameData.boxscore.teams.away;
+			var homeTeamBox = gameData.boxscore.teams.home;
+			boxscore.awayLocationName = awayTeamBox.team.locationName;
+			boxscore.homeLocationName = homeTeamBox.team.locationName;
+			boxscore.awayTeamName = awayTeamBox.team.teamName;
+			boxscore.homeTeamName = homeTeamBox.team.teamName;
+			boxscore.homeShortName = awayTeamBox.team.shortName;
+			boxscore.awayShortName = homeTeamBox.team.shortName;
+			boxscore.homeBatters = BuildBatterList(homeTeamBox.batters, homeTeamBox.players.players, gameData.feedLive.gameData.players.players);
+			boxscore.awayBatters = BuildBatterList(awayTeamBox.batters, awayTeamBox.players.players, gameData.feedLive.gameData.players.players);
+			boxscore.fieldingAndBattingInfo = BuildFieldingAndBattingInfo(awayTeamBox.info, homeTeamBox.info);
 
 			//	Build Team Info
 
