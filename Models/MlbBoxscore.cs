@@ -379,6 +379,9 @@ namespace dugout.WebApi.Models {
 
       [JsonProperty("sacFlies")]
       public int sacFlies { get; set; }
+
+      [JsonProperty("numberOfPitches")]
+      public int numberOfPitches { get; set; }
     }
 
     public class Fielding
@@ -707,19 +710,32 @@ namespace dugout.WebApi.Models {
         public string officialType { get; set; }
     }
 
-    public class GameInfo
-    {
-
-        [JsonProperty("label")]
-        public string label { get; set; }
-
-        [JsonProperty("value")]
-        public string value { get; set; }
+    public class AllowedLabels {
+      public static readonly string[] pitching = {
+        "WP",
+        "Inherited runners-scored",
+        "Umpires",
+        "T",
+        "Att"
+      };
+      public static readonly string[] batting = {
+        "E",
+        "DP",
+        "2B",
+        "3B",
+        "HR",
+        "RBI",
+        "Team LOB",
+        "CS",
+        "SB",
+      };
     }
-
     public class MlbBoxscore
     {
 
+        [JsonProperty("id")]
+        public string id { get; set; }
+        
         [JsonProperty("copyright")]
         public string copyright { get; set; }
 
@@ -730,7 +746,7 @@ namespace dugout.WebApi.Models {
         public IList<BoxscoreOfficial> officials { get; set; }
 
         [JsonProperty("info")]
-        public IList<GameInfo> info { get; set; }
+        public IList<Note> info { get; set; }
 
         [JsonProperty("pitchingNotes")]
         public IList<string> pitchingNotes { get; set; }

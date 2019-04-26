@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Html;
 using System.Linq;
 using Newtonsoft.Json;
 using System.Collections.Generic;
@@ -11,50 +12,26 @@ using MongoDB.Driver;
 namespace dugout.WebApi.Services {
   public class MlbService : IMlbService
 	{
-    private readonly IMongoCollection<Team> _teams;
-    private readonly IMongoCollection<MlbRosters> _rosters;
-    private readonly IMongoCollection<Person> _players;
+    private readonly IMongoCollection<JbsBoxscores> _boxscores;
     private readonly IMongoCollection<ScheduleDate> _dates;
 
     public MlbService(IConfiguration config)
     {
         var client = new MongoClient(config.GetConnectionString("mongoDb"));
         var database = client.GetDatabase("mlb");
-        _teams = database.GetCollection<Team>("Teams");
-				_rosters = database.GetCollection<MlbRosters>("Roster");
-				_players = database.GetCollection<Person>("Player");
 				_dates = database.GetCollection<ScheduleDate>("Dates");
+				_boxscores = database.GetCollection<JbsBoxscores>("Boxscores");
     }
 
-    public void CreateOrUpdateTeams(IList<Team> teams)
+		public async Task<JbsBoxscores> GetBoxscoresByDate(string date) {
+			var boxscores = await _boxscores.FindAsync(x => x.id == date);
+			return boxscores.ToList().FirstOrDefault();
+		}
+		public void CreateOrUpdateBoxscores(JbsBoxscores boxscores)
     {
-			teams.ToList().ForEach(team => {
-				var filter = Builders<Team>.Filter.Eq(t => t.id, team.id);
-				_teams.ReplaceOneAsync(filter, team, new UpdateOptions {IsUpsert = true});
-			});
+			var filter = Builders<JbsBoxscores>.Filter.Eq(d => d.id, boxscores.id);
+			_boxscores.ReplaceOneAsync(filter, boxscores, new UpdateOptions {IsUpsert = true});
     }
-
-    public void CreateOrUpdateRosters(IList<MlbRosters> rosters)
-		{
-			rosters.ToList().ForEach(roster => {
-				var filter = Builders<MlbRosters>.Filter.Eq(m => m.teamId, roster.teamId);
-				_rosters.ReplaceOneAsync(filter, roster, new UpdateOptions {IsUpsert = true});
-			});
-		}
-
-		public void CreateOrUpdatePlayers(IList<Person> players)
-		{
-			players.ToList().ForEach(player => {
-				var filter = Builders<Person>.Filter.Eq(m => m.id, player.id);
-				_players.ReplaceOneAsync(filter, player, new UpdateOptions {IsUpsert = true});
-			});
-		}
-
-		public void CreateOrUpdateSchedule(ScheduleDate date)
-		{
-			var filter = Builders<ScheduleDate>.Filter.Eq(d => d.date, date.date);
-			_dates.ReplaceOneAsync(filter, date, new UpdateOptions {IsUpsert = true});
-		}
 
 		private List<JbsBoxscoreBatter> BuildBatterList(IList<int> batterIds, List<BoxscorePlayer> boxscorePlayers, List<MlbGameFeedPlayer> gameFeedPlayers) {
 			var batterList = new List<JbsBoxscoreBatter>();
@@ -75,19 +52,23 @@ namespace dugout.WebApi.Services {
 			return batterList;
 		}
 
-		private List<FieldList> MergeFieldLists(IList<FieldList> awayFieldList, IList<FieldList> homeFieldList) {
-			var fieldLists = new List<FieldList>();
-			fieldLists.AddRange(awayFieldList);
-			foreach(var field in homeFieldList) {
-				try {
-					fieldLists.Where(i => i.label == field.label).First().value.ToList().AddRange(field.value);
-				}
-				catch {
-					fieldLists.Add(field);
-				}
+		private List<JbsBoxscorePitcher> BuildPitcherList(IList<int> pitcherIds, List<BoxscorePlayer> boxscorePlayers, List<MlbGameFeedPlayer> gameFeedPlayers) {
+			var pitcherList = new List<JbsBoxscorePitcher>();
+			foreach(var pitcherId in pitcherIds) {
+				var jbsPitcher = new JbsBoxscorePitcher();
+				var boxscorePlayer = boxscorePlayers.Find(p => p.person.id == pitcherId);
+				jbsPitcher.name = gameFeedPlayers.Find(p => p.id == pitcherId).boxscoreName;
+				jbsPitcher.position = boxscorePlayer.position.abbreviation;
+				jbsPitcher.inningsPitched = boxscorePlayer.stats.pitching.inningsPitched;
+				jbsPitcher.hits = boxscorePlayer.stats.pitching.hits.ToString();
+				jbsPitcher.earnedRuns = boxscorePlayer.stats.pitching.earnedRuns.ToString();
+				jbsPitcher.baseOnBalls = boxscorePlayer.stats.pitching.baseOnBalls.ToString();
+				jbsPitcher.strikeOuts = boxscorePlayer.stats.pitching.strikeOuts.ToString();
+				jbsPitcher.strikeOuts = boxscorePlayer.stats.pitching.numberOfPitches.ToString();
+				jbsPitcher.era = boxscorePlayer.seasonStats.pitching.era.ToString();
+				pitcherList.Add(jbsPitcher);
 			}
-
-			return fieldLists;
+			return pitcherList;
 		}
 
 		private List<Info> BuildFieldingAndBattingInfo(IList<Info> awayInfo, IList<Info> homeInfo){
@@ -109,6 +90,7 @@ namespace dugout.WebApi.Services {
 			var boxscore = new JbsBoxscore();
 			var awayTeamBox = gameData.boxscore.teams.away;
 			var homeTeamBox = gameData.boxscore.teams.home;
+			boxscore.id = gameData.id;
 			boxscore.awayLocationName = awayTeamBox.team.locationName;
 			boxscore.homeLocationName = homeTeamBox.team.locationName;
 			boxscore.awayTeamName = awayTeamBox.team.teamName;
@@ -117,29 +99,14 @@ namespace dugout.WebApi.Services {
 			boxscore.awayShortName = homeTeamBox.team.shortName;
 			boxscore.homeBatters = BuildBatterList(homeTeamBox.batters, homeTeamBox.players.players, gameData.feedLive.gameData.players.players);
 			boxscore.awayBatters = BuildBatterList(awayTeamBox.batters, awayTeamBox.players.players, gameData.feedLive.gameData.players.players);
+			boxscore.homePitchers = BuildPitcherList(homeTeamBox.pitchers, homeTeamBox.players.players, gameData.feedLive.gameData.players.players);
+			boxscore.awayPitchers = BuildPitcherList(awayTeamBox.pitchers, awayTeamBox.players.players, gameData.feedLive.gameData.players.players);
 			boxscore.fieldingAndBattingInfo = BuildFieldingAndBattingInfo(awayTeamBox.info, homeTeamBox.info);
-
-			//	Build Team Info
-
-			//	Build Pitchers
-
-			//	Build Game Info
-
+			boxscore.pitchingAndGameInfo = gameData.boxscore.info.ToList();
+			boxscore.linescore = gameData.linescore;
+			boxscore.status = gameData.status;
+			boxscore.gameDate = gameData.gameDate;
 			return boxscore;
 		}
-    public async Task<IList<Team>> GetTeams()
-    {
-			return await _teams.Find(_ => true).ToListAsync();
-    }
-
-		public async Task<IList<MlbRosters>> GetRosters()
-    {
-			return await _rosters.Find(_ => true).ToListAsync();
-    }
-
-		public async Task<IList<Person>> GetPlayers()
-    {
-			return await _players.Find(_ => true).ToListAsync();
-    }
 	}
 }

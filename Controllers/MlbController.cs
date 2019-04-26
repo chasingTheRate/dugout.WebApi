@@ -9,7 +9,6 @@ using dugout.WebApi.Services;
 using dugout.WebApi.Models;
 using dugout.WebApi.Mappings;
 
-
 namespace dugout.WebApi.Controllers
 {
 	[Route("api/[controller]/{action}")]
@@ -18,127 +17,45 @@ namespace dugout.WebApi.Controllers
 	{
 		public IMlbService _mlbService;
 		public IMlbApiService _mlbApiService;
-		public IMapper _mapper;
 
-		public MlbController(IMlbService mlbService, IMlbApiService mlbApiService, IMapper mapper) {
+		public MlbController(IMlbService mlbService, IMlbApiService mlbApiService) {
 			_mlbService = mlbService;
 			_mlbApiService = mlbApiService;
-			_mapper = mapper;
 		}
 
-		private async Task<List<MlbRosters>> GetRosters(IList<Team> teams) {
-			var roster = new List<MlbRosters>();
-			foreach(var team in teams) {
-				var teamRoster = await _mlbApiService.GetTeamRoster(team.id);
-				roster.Add(teamRoster);
+		private async Task<List<JbsBoxscore>> GetJbsBoxscores(IList<Game> games){
+			var boxscores = new List<JbsBoxscore>();
+			foreach(var game in games){
+				var gameData = new MlbGameData();
+				gameData.id = game.gamePk.ToString();
+				gameData.status = game.status;
+				gameData.gameDate = game.gameDate;
+				gameData.boxscore = await _mlbApiService.GetBoxscore(game.gamePk.ToString());
+				gameData.feedLive = await _mlbApiService.GetGameFeedLive(game.gamePk.ToString());
+				gameData.linescore = await _mlbApiService.GetGameLinescore(game.gamePk.ToString());
+				boxscores.Add(_mlbService.BuildBoxscore(gameData));
 			}
-			return roster;
+			return boxscores;
 		}
 
-	private string BuildPlayerIdQueryString(IList<Roster> roster) {
-		var playerQueryString = "";
-		for(var i = 0; i<roster.Count; i++) {
-			if (i != roster.Count)
-			{
-				playerQueryString += $"{roster[i].person.id}%2C";
-			}
-			else 
-			{
-				playerQueryString += $"{roster[i].person.id}";
-			}
-		}
-		return playerQueryString;
-	}
-		private async Task<List<Person>> GetPlayers(IList<MlbRosters> rosters) {
-			var players = new List<Person>();
-			foreach(var teamRoster in rosters) {
-				var playerIdsAsQueryString = BuildPlayerIdQueryString(teamRoster.roster);
-				var teamPlayers = await _mlbApiService.GetPlayers(playerIdsAsQueryString);
-				players.AddRange(teamPlayers);
-			}
-			return players;
-		}
-
-	
-		[HttpPost]
-		public async Task<IEnumerable<Team>> UpdateTeams()
-		{ 
-			var teams = await _mlbApiService.GetTeams(SportIds.Mlb);
-			_mlbService.CreateOrUpdateTeams(teams);
-			return teams;
-		}
-
-		[HttpPost]
-		public async void UpdateTeamRosters()
-		{ 
-			var teams = await _mlbService.GetTeams();
-			var rosters = await GetRosters(teams);
-			_mlbService.CreateOrUpdateRosters(rosters);
-		}
-
-		[HttpPost]
-		public async void UpdatePlayers()
-		{ 
-			var rosters = await _mlbService.GetRosters();
-			var players = await GetPlayers(rosters);
-			_mlbService.CreateOrUpdatePlayers(players);
-		}
-
-		[HttpPost]
-		public async void UpdateSchedule()
-		{ 
-			DateTime today = DateTime.Today;
-			Console.WriteLine(today.ToString("d"));
-			var mlbSchedule = await _mlbApiService.GetSchedule(today.ToString("d"));
-			_mlbService.CreateOrUpdateSchedule(mlbSchedule.dates[0]);
-		}
-
-		[HttpPost]
-		public async void UpdateBoxscores(string date)
-		{ 
-			var gameData = new MlbGameData();
-			gameData.boxscore = await _mlbApiService.GetBoxscore("566775");
-			gameData.feedLive = await _mlbApiService.GetGameFeedLive("566775");
-			gameData.linescore = await _mlbApiService.GetGameLinescore("566775");
-
-			var boxscore = _mlbService.BuildBoxscore(gameData);
-			//	Build LBS Boxscore
-
-			// 	Save to Mongo?
-
-			//	Push to Firebase
-		}
-
-		// GET api/values
 		[HttpGet]
-		public ActionResult<IEnumerable<string>> Get()
-		{
-			return new string[] { "value1", "value2" };
+		public async Task<string> boxscores(string date)
+		{ 
+			_mlbService.GetBoxscoresByDate(date);
+			return "test";
 		}
 
-		// GET api/values/5
-		[HttpGet("{id}")]
-		public ActionResult<string> Get(int id)
-		{
-			return "value";
-		}
-
-		// POST api/values
 		[HttpPost]
-		public void Post([FromBody] string value)
-		{
-		}
-
-		// PUT api/values/5
-		[HttpPut("{id}")]
-		public void Put(int id, [FromBody] string value)
-		{
-		}
-
-		// DELETE api/values/5
-		[HttpDelete("{id}")]
-		public void Delete(int id)
-		{
+		public async Task<List<JbsBoxscore>> UpdateBoxscores(string date)
+		{ 
+			var schedule = await _mlbApiService.GetSchedule(date);
+			var games = schedule.dates[0].games;
+			var boxscores = await GetJbsBoxscores(games);
+			_mlbService.CreateOrUpdateBoxscores(new JbsBoxscores{
+				id = date,
+				boxscores = boxscores,
+			});
+			return boxscores;
 		}
 	}
 }

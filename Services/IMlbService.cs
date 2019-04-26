@@ -5,15 +5,10 @@ using dugout.WebApi.Models;
 namespace dugout.WebApi.Services {
   public interface IMlbService
   {
-    void CreateOrUpdateTeams(IList<Team> teams);
-    void CreateOrUpdateRosters(IList<MlbRosters> rosters);
-    void CreateOrUpdatePlayers(IList<Person> players);
-    void CreateOrUpdateSchedule(ScheduleDate date);
-    JbsBoxscore BuildBoxscore(MlbGameData gameData);
-    Task<IList<Team>> GetTeams();
-    Task<IList<MlbRosters>> GetRosters();
-    Task<IList<Person>> GetPlayers();
+    void CreateOrUpdateBoxscores(JbsBoxscores boxscores);
+    Task<JbsBoxscores> GetBoxscoresByDate(string date);
 
+    JbsBoxscore BuildBoxscore(MlbGameData gameData);
   };
 }
 
