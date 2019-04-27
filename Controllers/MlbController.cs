@@ -39,10 +39,9 @@ namespace dugout.WebApi.Controllers
 		}
 
 		[HttpGet]
-		public async Task<string> boxscores(string date)
+		public Task<JbsBoxscores> boxscores(string date)
 		{ 
-			_mlbService.GetBoxscoresByDate(date);
-			return "test";
+			return _mlbService.GetBoxscoresByDate(date);
 		}
 
 		[HttpPost]
