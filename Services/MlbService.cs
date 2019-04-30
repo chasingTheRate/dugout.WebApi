@@ -1,7 +1,9 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Hosting;
 using System.Linq;
 using Newtonsoft.Json;
 using System.Collections.Generic;
@@ -17,7 +19,7 @@ namespace dugout.WebApi.Services {
 
     public MlbService(IConfiguration config)
     {
-        var client = new MongoClient(config.GetConnectionString("mongoDb"));
+        var client = new MongoClient(config.GetConnectionString("MongoDb"));
         var database = client.GetDatabase("mlb");
 				_dates = database.GetCollection<ScheduleDate>("Dates");
 				_boxscores = database.GetCollection<JbsBoxscores>("Boxscores");

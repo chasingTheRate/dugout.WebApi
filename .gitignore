@@ -330,6 +330,6 @@ ASALocalRun/
 .mfractor/
 
 # App Settings
-appsettings.json
+docker-compose.override.yml
 /out
 
