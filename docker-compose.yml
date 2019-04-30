@@ -1,0 +1,9 @@
+version: '3'
+services:
+  web:
+    build: .
+    ports:
+     - "5030:80"
+    volumes:
+     - .:/app/src
+    restart: always

@@ -39,6 +39,12 @@ namespace dugout.WebApi.Controllers
 		}
 
 		[HttpGet]
+		public IActionResult Index()
+		{ 
+			return Content("Welcome to the Dugout Web Api...");
+		}
+
+		[HttpGet]
 		public Task<JbsBoxscores> boxscores(string date)
 		{ 
 			return _mlbService.GetBoxscoresByDate(date);
