@@ -91,12 +91,13 @@ namespace dugout.WebApi.Services {
 		public JbsBoxscore BuildBoxscore(MlbGameData gameData) {
 			var boxscore = new JbsBoxscore();
 
+	
 			boxscore.status = gameData.status;
 			boxscore.gameDate = gameData.gameDate;
 			boxscore.id = gameData.id;
 
-			if(gameData.boxscore != null || gameData.linescore != null || gameData.feedLive != null) {
-				
+			if(gameData.feedLive != null) {
+
 				var awayTeamBox = gameData.boxscore.teams.away;
 				var homeTeamBox = gameData.boxscore.teams.home;
 
