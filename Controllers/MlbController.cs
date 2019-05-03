@@ -33,7 +33,7 @@ namespace dugout.WebApi.Controllers
 				gameData.gameDate = game.gameDate;
 				gameData.linescore = await _mlbApiService.GetGameLinescore(game.gamePk.ToString());
 				gameData.boxscore = await _mlbApiService.GetBoxscore(game.gamePk.ToString());
-				if(gameData.status.statusCode != MlbGameStatusCodes.Preview) {
+				if(gameData.status.statusCode != MlbGameAbstractStatusCodes.Preview) {
 					gameData.feedLive = await _mlbApiService.GetGameFeedLive(game.gamePk.ToString());
 				}
 				boxscores.Add(_mlbService.BuildBoxscore(gameData));
