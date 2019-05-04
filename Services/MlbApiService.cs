@@ -33,7 +33,7 @@ namespace dugout.WebApi.Services {
 
     public async Task<MlbGameFeedLive> GetGameFeedLive(string gameId)
     {
-        var uri = $"http://statsapi.mlb.com:80/api/v1/game/{gameId}/feed/live";
+        var uri = $"http://statsapi.mlb.com:80/api/v1.1/game/{gameId}/feed/live";
         var response = await _httpClient.GetStringAsync(uri);
         return JsonConvert.DeserializeObject<MlbGameFeedLive>(response);
     }

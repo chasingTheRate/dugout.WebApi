@@ -40,7 +40,11 @@ namespace dugout.WebApi.Services {
 			foreach(var batterId in batterIds) {
 				var jbsBatter = new JbsBoxscoreBatter();
 				var boxscorePlayer = boxscorePlayers.Find(p => p.person.id == batterId);
-				jbsBatter.name = gameFeedPlayers.Find(p => p.id == batterId).boxscoreName;
+				try {
+					jbsBatter.name = gameFeedPlayers.Find(p => p.id == batterId).boxscoreName;
+				} catch {
+					System.Console.WriteLine("test");
+				}
 				jbsBatter.position = boxscorePlayer.position.abbreviation;
 				jbsBatter.atBats = boxscorePlayer.stats.batting.atBats.ToString();
 				jbsBatter.runs = boxscorePlayer.stats.batting.runs.ToString();
@@ -90,14 +94,10 @@ namespace dugout.WebApi.Services {
 
 		public JbsBoxscore BuildBoxscore(MlbGameData gameData) {
 			var boxscore = new JbsBoxscore();
-
-<<<<<<< HEAD
-	
-=======
+			System.Console.WriteLine(gameData.id);
 			var awayTeamBox = gameData.boxscore.teams.away;
 			var homeTeamBox = gameData.boxscore.teams.home;
 
->>>>>>> 294c1666ae5d3530d6d2bdba0d8b39cefa2e73eb
 			boxscore.status = gameData.status;
 			boxscore.gameDate = gameData.gameDate;
 			boxscore.id = gameData.id;
@@ -112,19 +112,6 @@ namespace dugout.WebApi.Services {
 			boxscore.linescore = gameData.linescore;
 
 			if(gameData.feedLive != null) {
-<<<<<<< HEAD
-
-				var awayTeamBox = gameData.boxscore.teams.away;
-				var homeTeamBox = gameData.boxscore.teams.home;
-
-				boxscore.awayLocationName = awayTeamBox.team.locationName;
-				boxscore.homeLocationName = homeTeamBox.team.locationName;
-				boxscore.awayTeamName = awayTeamBox.team.teamName;
-				boxscore.homeTeamName = homeTeamBox.team.teamName;
-				boxscore.homeShortName = awayTeamBox.team.shortName;
-				boxscore.awayShortName = homeTeamBox.team.shortName;
-=======
->>>>>>> 294c1666ae5d3530d6d2bdba0d8b39cefa2e73eb
 				boxscore.homeBatters = BuildBatterList(homeTeamBox.batters, homeTeamBox.players.players, gameData.feedLive.gameData.players.players);
 				boxscore.awayBatters = BuildBatterList(awayTeamBox.batters, awayTeamBox.players.players, gameData.feedLive.gameData.players.players);
 				boxscore.homePitchers = BuildPitcherList(homeTeamBox.pitchers, homeTeamBox.players.players, gameData.feedLive.gameData.players.players);
