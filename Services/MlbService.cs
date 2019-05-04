@@ -43,7 +43,7 @@ namespace dugout.WebApi.Services {
 				try {
 					jbsBatter.name = gameFeedPlayers.Find(p => p.id == batterId).boxscoreName;
 				} catch {
-					System.Console.WriteLine("test");
+					System.Console.WriteLine("Error: BuildBatterList");
 				}
 				jbsBatter.position = boxscorePlayer.position.abbreviation;
 				jbsBatter.atBats = boxscorePlayer.stats.batting.atBats.ToString();
@@ -94,7 +94,6 @@ namespace dugout.WebApi.Services {
 
 		public JbsBoxscore BuildBoxscore(MlbGameData gameData) {
 			var boxscore = new JbsBoxscore();
-			System.Console.WriteLine(gameData.id);
 			var awayTeamBox = gameData.boxscore.teams.away;
 			var homeTeamBox = gameData.boxscore.teams.home;
 
