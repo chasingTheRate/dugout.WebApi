@@ -104,8 +104,8 @@ namespace dugout.WebApi.Services {
 			boxscore.homeLocationName = homeTeamBox.team.locationName;
 			boxscore.awayTeamName = awayTeamBox.team.teamName;
 			boxscore.homeTeamName = homeTeamBox.team.teamName;
-			boxscore.homeShortName = awayTeamBox.team.shortName;
-			boxscore.awayShortName = homeTeamBox.team.shortName;
+			boxscore.awayShortName = awayTeamBox.team.shortName;
+			boxscore.homeShortName = homeTeamBox.team.shortName;
 			boxscore.fieldingAndBattingInfo = BuildFieldingAndBattingInfo(awayTeamBox.info, homeTeamBox.info);
 			boxscore.pitchingAndGameInfo = gameData.boxscore.info.ToList();
 			boxscore.linescore = gameData.linescore;
