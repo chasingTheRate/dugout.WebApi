@@ -70,7 +70,7 @@ namespace dugout.WebApi.Services {
 				jbsPitcher.earnedRuns = boxscorePlayer.stats.pitching.earnedRuns.ToString();
 				jbsPitcher.baseOnBalls = boxscorePlayer.stats.pitching.baseOnBalls.ToString();
 				jbsPitcher.strikeOuts = boxscorePlayer.stats.pitching.strikeOuts.ToString();
-				jbsPitcher.strikeOuts = boxscorePlayer.stats.pitching.numberOfPitches.ToString();
+				jbsPitcher.numberOfPitches = boxscorePlayer.stats.pitching.numberOfPitches.ToString();
 				jbsPitcher.era = boxscorePlayer.seasonStats.pitching.era.ToString();
 				pitcherList.Add(jbsPitcher);
 			}
