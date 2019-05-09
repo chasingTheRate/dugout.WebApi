@@ -56,6 +56,7 @@ namespace dugout.WebApi.Models {
   }
 
   public class JbsBoxscoreBatter {
+    public string id { get; set; }
     public string name { get; set; }
     public string position { get; set; }
     public string atBats { get; set; }
@@ -68,6 +69,7 @@ namespace dugout.WebApi.Models {
   }
 
   public class JbsBoxscorePitcher {
+    public string id { get; set; }
     public string name { get; set; }
     public string position { get; set; }
     public string inningsPitched { get; set; }

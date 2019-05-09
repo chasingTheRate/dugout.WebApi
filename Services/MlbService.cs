@@ -45,6 +45,7 @@ namespace dugout.WebApi.Services {
 				} catch {
 					System.Console.WriteLine("Error: BuildBatterList");
 				}
+				jbsBatter.id = batterId.ToString();
 				jbsBatter.position = boxscorePlayer.position.abbreviation;
 				jbsBatter.atBats = boxscorePlayer.stats.batting.atBats.ToString();
 				jbsBatter.runs = boxscorePlayer.stats.batting.runs.ToString();
@@ -63,6 +64,7 @@ namespace dugout.WebApi.Services {
 			foreach(var pitcherId in pitcherIds) {
 				var jbsPitcher = new JbsBoxscorePitcher();
 				var boxscorePlayer = boxscorePlayers.Find(p => p.person.id == pitcherId);
+				jbsPitcher.id = pitcherId.ToString();
 				jbsPitcher.name = gameFeedPlayers.Find(p => p.id == pitcherId).boxscoreName;
 				jbsPitcher.position = boxscorePlayer.position.abbreviation;
 				jbsPitcher.inningsPitched = boxscorePlayer.stats.pitching.inningsPitched;
