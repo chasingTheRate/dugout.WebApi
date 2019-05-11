@@ -91,7 +91,7 @@ namespace dugout.WebApi.Services {
 			foreach(var info in homeInfo){
 				try {
 					var tempInfo = fieldingAndBattingInfo.Where(i => i.title == info.title).ToList().First();
-					tempInfo.fieldList.ToList().MergeFieldLists(info.fieldList.ToList());
+					tempInfo.fieldList = tempInfo.fieldList.ToList().MergeFieldLists(info.fieldList.ToList());
 				}
 				catch {
 					fieldingAndBattingInfo.Add(info);
