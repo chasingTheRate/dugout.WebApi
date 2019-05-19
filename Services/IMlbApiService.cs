@@ -9,7 +9,7 @@ namespace dugout.WebApi.Services {
     Task<MlbBoxscore> GetBoxscore(string gameId);
     Task<MlbGameFeedLive> GetGameFeedLive(string gameId);
     Task<MlbGameLinescore> GetGameLinescore(string gameId);
-
+    Task<MlbLeagueLeaders> GetLeagueLeaders();
   };
 }
 

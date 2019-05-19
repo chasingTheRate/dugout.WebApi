@@ -53,6 +53,12 @@ namespace dugout.WebApi.Controllers
 			return _mlbService.GetBoxscoresByDate(date);
 		}
 
+		[HttpGet]
+		public Task<IList<JbsLeagueLeaders>> leagueLeaders()
+		{ 
+			return _mlbService.GetLeagueLeaders();
+		}
+
 		[HttpPost]
 		public async Task<List<JbsBoxscore>> UpdateBoxscores(string date)
 		{ 
@@ -64,6 +70,16 @@ namespace dugout.WebApi.Controllers
 				boxscores = boxscores,
 			});
 			return boxscores;
+		}
+
+		[HttpPost]
+		public async Task<IList<JbsLeagueLeaders>> UpdateLeagueLeaders()
+		{ 
+			var response = await _mlbApiService.GetLeagueLeaders();
+			var leagueLeaders = response.leagueLeaders;
+			var jsbLeagueLeaderList = _mlbService.ConvertLeagueLeaders(leagueLeaders);
+			_mlbService.CreateOrUpdateLeagueLeaders(jsbLeagueLeaderList);
+			return jsbLeagueLeaderList;
 		}
 	}
 }

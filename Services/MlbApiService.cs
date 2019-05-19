@@ -45,5 +45,12 @@ namespace dugout.WebApi.Services {
         return JsonConvert.DeserializeObject<MlbGameLinescore>(response);
     }
 
+    public async Task<MlbLeagueLeaders> GetLeagueLeaders()
+    {
+        var uri = $"https://statsapi.mlb.com/api/v1/stats/leaders?leaderCategories=wins,saves,earnedRunAverage,strikeouts,battingAverage,homeRuns,runsBattedIn,stolenBases&leaderGameTypes=R&season=2019&hydrate=person,team&limit=10";
+        var response = await _httpClient.GetStringAsync(uri);
+        return JsonConvert.DeserializeObject<MlbLeagueLeaders>(response);
+    }
+
   }
 }

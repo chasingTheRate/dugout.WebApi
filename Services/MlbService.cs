@@ -15,19 +15,24 @@ namespace dugout.WebApi.Services {
   public class MlbService : IMlbService
 	{
     private readonly IMongoCollection<JbsBoxscores> _boxscores;
-    private readonly IMongoCollection<ScheduleDate> _dates;
+    private readonly IMongoCollection<JbsLeagueLeaders> _leagueLeaders;
 
     public MlbService(IConfiguration config)
     {
         var client = new MongoClient(config.GetConnectionString("MongoDb"));
         var database = client.GetDatabase("mlb");
-				_dates = database.GetCollection<ScheduleDate>("Dates");
 				_boxscores = database.GetCollection<JbsBoxscores>("Boxscores");
+				_leagueLeaders = database.GetCollection<JbsLeagueLeaders>("LeagueLeaders");
     }
 
 		public async Task<JbsBoxscores> GetBoxscoresByDate(string date) {
 			var boxscores = await _boxscores.FindAsync(x => x.id == date);
 			return boxscores.ToList().FirstOrDefault();
+		}
+
+		public async Task<IList<JbsLeagueLeaders>> GetLeagueLeaders() {
+			var leagueLeadersList = await _leagueLeaders.FindAsync(_ => true);
+			return leagueLeadersList.ToList();
 		}
 		public void CreateOrUpdateBoxscores(JbsBoxscores boxscores)
     {
@@ -35,6 +40,13 @@ namespace dugout.WebApi.Services {
 			_boxscores.ReplaceOneAsync(filter, boxscores, new UpdateOptions {IsUpsert = true});
     }
 
+		public void CreateOrUpdateLeagueLeaders(IList<JbsLeagueLeaders> leagueLeadersList)
+    {
+			foreach (var leagueLeaders in leagueLeadersList) {
+				var filter = Builders<JbsLeagueLeaders>.Filter.Eq(d => d.leaderCategory, leagueLeaders.leaderCategory);
+				_leagueLeaders.ReplaceOneAsync(filter, leagueLeaders, new UpdateOptions {IsUpsert = true});
+			}
+    }
 		private List<JbsBoxscoreBatter> BuildBatterList(IList<int> batterIds, List<BoxscorePlayer> boxscorePlayers, List<MlbGameFeedPlayer> gameFeedPlayers) {
 			var batterList = new List<JbsBoxscoreBatter>();
 			foreach(var batterId in batterIds) {
@@ -59,7 +71,6 @@ namespace dugout.WebApi.Services {
 			}
 			return batterList;
 		}
-
 		private List<JbsBoxscorePitcher> BuildPitcherList(IList<int> pitcherIds, List<BoxscorePlayer> boxscorePlayers, List<MlbGameFeedPlayer> gameFeedPlayers) {
 			var pitcherList = new List<JbsBoxscorePitcher>();
 			foreach(var pitcherId in pitcherIds) {
@@ -84,7 +95,6 @@ namespace dugout.WebApi.Services {
 			}
 			return pitcherList;
 		}
-
 		private List<Info> BuildFieldingAndBattingInfo(IList<Info> awayInfo, IList<Info> homeInfo){
 			var fieldingAndBattingInfo = new List<Info>();
 			fieldingAndBattingInfo.AddRange(awayInfo);
@@ -99,7 +109,6 @@ namespace dugout.WebApi.Services {
 			}
 			return fieldingAndBattingInfo;
 		}
-
 		public JbsBoxscore BuildBoxscore(MlbGameData gameData) {
 			var boxscore = new JbsBoxscore();
 			var awayTeamBox = gameData.boxscore.teams.away;
@@ -126,6 +135,29 @@ namespace dugout.WebApi.Services {
 			}
 			
 			return boxscore;
+		}
+		public List<JbsLeagueLeaders> ConvertLeagueLeaders(IList<LeagueLeader> leagueLeaders) {
+			var jbsLeagueLeadersList = new List<JbsLeagueLeaders>();
+			foreach(var leagueLeader in leagueLeaders) {
+				var jsbLeagueLeaders = new JbsLeagueLeaders();
+				jsbLeagueLeaders.leagueleaders = new List<JbsLeagueLeader>();
+
+				jsbLeagueLeaders.id = Guid.NewGuid().ToString();
+				jsbLeagueLeaders.leaderCategory = leagueLeader.leaderCategory;
+				jsbLeagueLeaders.statGroup = jsbLeagueLeaders.statGroup;
+				foreach (var leader in leagueLeader.leaders)
+				{
+					var jsbLeader = new JbsLeagueLeader();
+					jsbLeader.id = leader.person.id.ToString();
+					jsbLeader.lastFirstName = leader.person.lastFirstName;
+					jsbLeader.rank = leader.rank;
+					jsbLeader.teamAbbreviation = leader.team.abbreviation;
+					jsbLeader.value = leader.value;
+					jsbLeagueLeaders.leagueleaders.Add(jsbLeader);
+				}
+				jbsLeagueLeadersList.Add(jsbLeagueLeaders);
+			}
+			return jbsLeagueLeadersList;
 		}
 	}
 }

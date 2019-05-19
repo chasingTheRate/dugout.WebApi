@@ -6,9 +6,12 @@ namespace dugout.WebApi.Services {
   public interface IMlbService
   {
     void CreateOrUpdateBoxscores(JbsBoxscores boxscores);
-    Task<JbsBoxscores> GetBoxscoresByDate(string date);
+    void CreateOrUpdateLeagueLeaders(IList<JbsLeagueLeaders> leagueLeadersList);
 
+    Task<JbsBoxscores> GetBoxscoresByDate(string date);
+    Task<IList<JbsLeagueLeaders>> GetLeagueLeaders();
     JbsBoxscore BuildBoxscore(MlbGameData gameData);
+    List<JbsLeagueLeaders> ConvertLeagueLeaders(IList<LeagueLeader> leagueLeaders);
   };
 }
 
