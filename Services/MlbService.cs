@@ -144,7 +144,7 @@ namespace dugout.WebApi.Services {
 
 				jsbLeagueLeaders.id = Guid.NewGuid().ToString();
 				jsbLeagueLeaders.leaderCategory = leagueLeader.leaderCategory;
-				jsbLeagueLeaders.statGroup = jsbLeagueLeaders.statGroup;
+				jsbLeagueLeaders.statGroup = leagueLeader.statGroup;
 				foreach (var leader in leagueLeader.leaders)
 				{
 					var jsbLeader = new JbsLeagueLeader();
