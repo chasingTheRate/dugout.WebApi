@@ -10,7 +10,6 @@ namespace dugout.WebApi.Services {
     Task<JbsBoxscores> GetBoxscoresByDate(string date);
     Task<IList<JbsLeagueLeaders>> GetLeagueLeaders();
     Task<IList<JbsLeagueLeadersCategories>> GetLeagueLeadersCategories();
-
     JbsBoxscore BuildBoxscore(MlbGameData gameData);
     List<JbsLeagueLeaders> ConvertLeagueLeaders(IList<LeagueLeader> leagueLeaders);
   };
