@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Text;
 using dugout.WebApi.Models;
 using System.Linq;
 using MongoDB.Driver;
@@ -17,6 +18,10 @@ namespace dugout.WebApi.Services {
         _httpClient = httpClient;
     }
 
+    private string CreateCategoryString(List<string> categories) {
+        var categorySB = new StringBuilder();
+        return string.Join(",", categories.ToArray());
+    }
     public async Task<MlbSchedule> GetSchedule(string date)
     {
         var uri = $"http://statsapi.mlb.com:80/api/v1/schedule?sportId=1&date={date}";
@@ -45,9 +50,10 @@ namespace dugout.WebApi.Services {
         return JsonConvert.DeserializeObject<MlbGameLinescore>(response);
     }
 
-    public async Task<MlbLeagueLeaders> GetLeagueLeaders()
+    public async Task<MlbLeagueLeaders> GetLeagueLeaders(string statGroup, List<string> categories)
     {
-        var uri = $"https://statsapi.mlb.com/api/v1/stats/leaders?leaderCategories=wins,saves,earnedRunAverage,strikeouts,battingAverage,homeRuns,runsBattedIn,stolenBases&leaderGameTypes=R&season=2019&hydrate=person,team&limit=10";
+        var categoriesAsString = CreateCategoryString(categories);
+        var uri = $"https://statsapi.mlb.com/api/v1/stats/leaders?statGroup={statGroup}&leaderCategories={categoriesAsString}&leaderGameTypes=R&season=2019&hydrate=person,team&limit=10";
         var response = await _httpClient.GetStringAsync(uri);
         return JsonConvert.DeserializeObject<MlbLeagueLeaders>(response);
     }

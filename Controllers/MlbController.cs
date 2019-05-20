@@ -75,8 +75,12 @@ namespace dugout.WebApi.Controllers
 		[HttpPost]
 		public async Task<IList<JbsLeagueLeaders>> UpdateLeagueLeaders()
 		{ 
-			var response = await _mlbApiService.GetLeagueLeaders();
-			var leagueLeaders = response.leagueLeaders;
+			var leagueLeaders = new List<LeagueLeader>();
+			var categoryList = await _mlbService.GetLeagueLeadersCategories();
+			foreach (var category in categoryList) {
+				var response = await _mlbApiService.GetLeagueLeaders(category.statGroup, category.categories);
+				leagueLeaders.AddRange(response.leagueLeaders);
+			}
 			var jsbLeagueLeaderList = _mlbService.ConvertLeagueLeaders(leagueLeaders);
 			_mlbService.CreateOrUpdateLeagueLeaders(jsbLeagueLeaderList);
 			return jsbLeagueLeaderList;

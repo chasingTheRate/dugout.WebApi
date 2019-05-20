@@ -16,6 +16,8 @@ namespace dugout.WebApi.Services {
 	{
     private readonly IMongoCollection<JbsBoxscores> _boxscores;
     private readonly IMongoCollection<JbsLeagueLeaders> _leagueLeaders;
+    private readonly IMongoCollection<JbsLeagueLeadersCategories> _leagueLeadersCategories;
+
 
     public MlbService(IConfiguration config)
     {
@@ -23,6 +25,7 @@ namespace dugout.WebApi.Services {
         var database = client.GetDatabase("mlb");
 				_boxscores = database.GetCollection<JbsBoxscores>("Boxscores");
 				_leagueLeaders = database.GetCollection<JbsLeagueLeaders>("LeagueLeaders");
+				_leagueLeadersCategories = database.GetCollection<JbsLeagueLeadersCategories>("LeagueLeadersCategories");
     }
 
 		public async Task<JbsBoxscores> GetBoxscoresByDate(string date) {
@@ -33,6 +36,11 @@ namespace dugout.WebApi.Services {
 		public async Task<IList<JbsLeagueLeaders>> GetLeagueLeaders() {
 			var leagueLeadersList = await _leagueLeaders.FindAsync(_ => true);
 			return leagueLeadersList.ToList();
+		}
+
+		public async Task<IList<JbsLeagueLeadersCategories>> GetLeagueLeadersCategories() {
+			var categoryList = await _leagueLeadersCategories.FindAsync(_ => true);
+			return categoryList.ToList();
 		}
 		public void CreateOrUpdateBoxscores(JbsBoxscores boxscores)
     {
